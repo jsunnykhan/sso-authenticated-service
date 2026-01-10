@@ -1,13 +1,11 @@
 
 from typing import cast
-from fastapi import Depends
-from app.db.session import get_db
 from sqlalchemy.orm import Session
 from app.db.models.provider import Provider
 from app.schemas.provider import ValidateProvider , ProviderCreate ,ProviderUpdate
 
 class ProviderService:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session):
         self.db = db
     
     def get_provider_count(self) -> int:

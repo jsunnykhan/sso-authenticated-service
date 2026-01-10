@@ -2,14 +2,13 @@
 
 from typing import cast
 from fastapi import Depends
-from app.db.session import get_db
 from sqlalchemy.orm import Session
 from app.db.models.user import User
 from app.utils.hash import verify_password , get_password_hash
 
 
 class AuthService:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session):
         self.db = db
     
     def user_exists(self, email: str, password: str):

@@ -8,18 +8,19 @@ from app.services.provider import ProviderService
 from app.services.identity import IdentityService
 from app.utils.token import Token
 from app.core.config import settings
-
+from sqlalchemy.orm import Session
+from app.db.session import get_db
 router = APIRouter()
-auth_service = AuthService()
-provider_service = ProviderService()
-identity_service = IdentityService()
 token_util = Token()
 
 @router.post("/authorize", response_model=ResponseModel[AuthResponse])
 def authorize(
     form_data: Auth,
-    provider=Depends(get_client)
+    provider = Depends(get_client),
+    db: Session = Depends(get_db)
 ):
+    auth_service = AuthService(db)
+    identity_service = IdentityService(db)
     user = auth_service.user_exists(form_data.email, form_data.password)
     
     if user : 

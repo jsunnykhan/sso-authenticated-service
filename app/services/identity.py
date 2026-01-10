@@ -1,11 +1,9 @@
 
 from sqlalchemy.orm import Session
-from fastapi import Depends
-from app.db.session import get_db
 from app.db.models.user_identities import UserIdentity
 
 class IdentityService:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session):
         self.db = db
     
     def get_identities_by_user(self, user_id: str):

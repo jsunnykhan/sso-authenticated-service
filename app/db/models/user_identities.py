@@ -10,7 +10,7 @@ from app.db.timestamp import TimestampMixin
 class UserIdentity(Base , TimestampMixin):
     __tablename__ = "user_identities"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4 , nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     provider_id = Column(UUID(as_uuid=True), ForeignKey("providers.id"))
     provider_user_id = Column(String, nullable=False)

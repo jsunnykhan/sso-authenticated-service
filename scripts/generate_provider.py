@@ -14,7 +14,7 @@ def generate_client_id() -> str:
     return str(uuid.uuid4())
 
 
-def generate_pem(provider_name: str, client_id: str) -> Path:
+def generate_pem(client_id: str) -> Path:
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
@@ -26,7 +26,7 @@ def generate_pem(provider_name: str, client_id: str) -> Path:
         encryption_algorithm=serialization.NoEncryption(),
     )
 
-    pem_path = KEYS_DIR / f"{provider_name}_{client_id}.pem"
+    pem_path = KEYS_DIR / f"{client_id}.pem"
     pem_path.write_bytes(pem_bytes)
 
     return pem_path
@@ -38,7 +38,7 @@ def generate_client_secret(pem_path: Path) -> str:
 
 
 def main():
-    provider_name = "DefaultProvider"
+    provider_name = "defaultProvider"
     redirect_url = "https://example.com/callback"
 
     
@@ -46,7 +46,7 @@ def main():
     try:
 
         client_id = generate_client_id()
-        pem_path = generate_pem(provider_name, client_id)
+        pem_path = generate_pem( client_id)
         client_secret = generate_client_secret(pem_path)
 
         provider : dict = { 
