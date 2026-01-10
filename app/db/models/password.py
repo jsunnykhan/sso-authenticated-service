@@ -6,7 +6,7 @@ import uuid
 from app.db.base_class import Base
 from app.db.timestamp import TimestampMixin
 
-class Password(Base , TimestampMixin):
+class Password(Base, TimestampMixin):
     __tablename__ = "passwords"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -14,4 +14,5 @@ class Password(Base , TimestampMixin):
     algorithm = Column(String, nullable=False)
     salt = Column(String, nullable=True)
     password = Column(String, nullable=False)
+
     user = relationship("User", back_populates="password")

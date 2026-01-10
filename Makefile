@@ -28,3 +28,6 @@ db-downgrade:
 	docker compose exec web alembic downgrade -1
 db-history:
 	docker compose exec web alembic history
+
+create-provider:
+	docker compose exec web python3 ./scripts/generate_provider.py

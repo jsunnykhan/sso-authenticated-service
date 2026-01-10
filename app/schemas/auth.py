@@ -4,7 +4,7 @@ from typing import Optional
 class Auth(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
-    name = Optional[str]
+    name: Optional[str] = None
 
 
 class AuthResponse(Auth):
@@ -14,5 +14,6 @@ class AuthResponse(Auth):
     refresh_token: str
     exp : int
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

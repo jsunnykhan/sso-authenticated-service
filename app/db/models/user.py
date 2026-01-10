@@ -13,4 +13,7 @@ class User( Base , TimestampMixin):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=True)
     password = relationship("Password", uselist=False, back_populates="user")
+    
+    #relationship
     identities = relationship("UserIdentity", back_populates="user")
+    password = relationship("Password", uselist=False, back_populates="user", cascade="all, delete-orphan")

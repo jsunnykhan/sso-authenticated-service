@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status , Header
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas.auth import  AuthResponse , Auth
-from app.utils.token import get_token
 from app.services.auth import AuthService
 from app.schemas.response import ResponseModel
 from app.schemas.token import JWTToken
 from app.api.v1.dependencies import get_client
 from app.services.provider import ProviderService
 from app.services.identity import IdentityService
+from app.utils.token import Token
+from app.core.config import settings
 
 router = APIRouter()
 auth_service = AuthService()
 provider_service = ProviderService()
 identity_service = IdentityService()
+token_util = Token()
 
 @router.post("/authorize", response_model=ResponseModel[AuthResponse])
 def authorize(
@@ -58,11 +59,17 @@ def authorize(
         aud=provider.client_id,
     )
 
-    token = get_token(token_data)
+    access_token = token_util.get_access_token(token_data)
+    refresh_token = token_util.get_refresh_token(token_data)
 
     return ResponseModel(
         code=status.HTTP_201_CREATED,
         message="Login Successful",
-        data={"access_token": token, "token_type": "bearer"},
+        data={
+            "access_token": access_token, 
+            "token_type": "bearer", 
+            "email": user.email ,
+            "refresh_token": refresh_token , 
+            "exp" : settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60* 1000
+            }
     )
-

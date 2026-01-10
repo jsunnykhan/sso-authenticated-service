@@ -9,6 +9,10 @@ from app.schemas.provider import ValidateProvider , ProviderCreate ,ProviderUpda
 class ProviderService:
     def __init__(self, db: Session = Depends(get_db)):
         self.db = db
+    
+    def get_provider_count(self) -> int:
+        count = self.db.query(Provider).count()
+        return count
         
     def validate_client(self, data : ValidateProvider) -> bool | Provider:
         provider = self.db.query(Provider).filter(

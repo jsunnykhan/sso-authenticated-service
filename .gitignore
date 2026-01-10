@@ -2,6 +2,7 @@
 
 .venv
 *.pyc
+keys/
 
 __pycache__
 

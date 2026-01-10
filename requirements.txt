@@ -17,6 +17,3 @@ python-multipart
 
 #for maintains db and migrate db
 alembic
-
-# scheduler for corn job
-APScheduler
