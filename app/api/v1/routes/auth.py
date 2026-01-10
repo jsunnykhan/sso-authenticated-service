@@ -1,82 +1,68 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.user import UserCreate, UserLogin, UserResponse, PasswordResetRequest
-from app.services.user import (
-    create_user,
-    authenticate_user,
-    get_current_user,
-    get_user_permissions,
-    reset_user_password,
-)
-from fastapi.security import OAuth2PasswordRequestForm
-from app.utils.token import create_access_token
-from ..dependencies import permission_required
+from fastapi import APIRouter, Depends, HTTPException, status , Header
+from typing import Optional
+from app.schemas.auth import  AuthResponse , Auth
+from app.utils.token import get_token
+from app.services.auth import AuthService
 from app.schemas.response import ResponseModel
+from app.schemas.token import JWTToken
+from app.api.v1.dependencies import get_client
+from app.services.provider import ProviderService
+from app.services.identity import IdentityService
 
 router = APIRouter()
+auth_service = AuthService()
+provider_service = ProviderService()
+identity_service = IdentityService()
 
+@router.post("/authorize", response_model=ResponseModel[AuthResponse])
+def authorize(
+    form_data: Auth,
+    provider=Depends(get_client)
+):
+    user = auth_service.user_exists(form_data.email, form_data.password)
+    
+    if user : 
+        identities = identity_service.get_identity_by_user_and_provider(
+            user_id=str(user.id),
+            provider_id=str(provider.id)
+        )
+        if not identities:
+            identity_service.create_identity_between_user_and_provider(
+                user_id=str(user.id),
+                provider_id=str(provider.id),
+                provider_user_id=str(user.id)
+            )   
+        
 
-@router.post("/signup", response_model=ResponseModel)
-def signup(user: UserCreate, db: Session = Depends(get_db)):
-    create_user(user, db)
-    return ResponseModel(
-        code=status.HTTP_201_CREATED, message="Signup Successfull", data=None
+    if not user:
+        user = auth_service.create_user(form_data.email, form_data.password)
+        
+        if not user:
+            raise HTTPException(status_code=400, detail="User creation failed")
+        
+        linked_identity = identity_service.create_identity_between_user_and_provider(
+            user_id=str(user.id),
+            provider_id=str(provider.id),
+            provider_user_id=str(user.id)
+        )
+        
+        if not linked_identity:
+            raise HTTPException(status_code=400, detail="Failed to link user with provider")
+        
+    
+    
+    token_data = JWTToken(
+        email= str(user.email),
+        client_id=provider.client_id,
+        sub=str(user.id),
+        aud=provider.client_id,
     )
 
+    token = get_token(token_data)
 
-@router.post("/login", response_model=ResponseModel)
-def login(form_data: UserLogin, db: Session = Depends(get_db)):
-    user = authenticate_user(form_data.email, form_data.password, db)
-    print(user)
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-    token = create_access_token(data={"sub": user.email, "role": user.role})
     return ResponseModel(
         code=status.HTTP_201_CREATED,
-        message="Login Successfull",
+        message="Login Successful",
         data={"access_token": token, "token_type": "bearer"},
     )
 
-
-@router.get(
-    "/me",
-    response_model=ResponseModel[UserResponse],
-    dependencies=[Depends(permission_required())],
-)
-def read_users_me(current_user=Depends(get_current_user)):
-    return ResponseModel(code=status.HTTP_200_OK, message="Success", data=current_user)
-
-
-@router.get(
-    "/permissions",
-    dependencies=[Depends(permission_required())],
-    response_model=ResponseModel,
-)
-def read_permissions(
-    current_user=Depends(get_current_user),
-):
-
-    return ResponseModel(
-        code=status.HTTP_200_OK,
-        message="Success",
-        data=get_user_permissions(current_user.role),
-    )
-
-
-@router.post(
-    "/reset-password",
-    dependencies=[Depends(permission_required())],
-    response_model=ResponseModel,
-)
-def reset_pass(
-    body: PasswordResetRequest,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    reset_user_password(current_user, body.new_password, db)
-    return ResponseModel(
-        code=status.HTTP_205_RESET_CONTENT,
-        message="Password reset successful",
-        data=None,
-    )
