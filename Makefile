@@ -14,7 +14,7 @@ dev-clean:
 docker-up:
 	docker compose up -d
 docker-down:
-	docker compose down
+	docker-compose down
 docker-rebuild:
 	docker compose down -v && docker compose up --build -d
 

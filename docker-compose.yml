@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: db
+    container_name: sso-identity-database
     ports:
       - "5432:5432"
     environment:
@@ -18,10 +18,10 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - fast-api-network
+      - sso-identity-network
 
   web:
-    container_name: fast-api-api
+    container_name: sso-identity-provider
     build:
       context: .
       dockerfile: Dockerfile
@@ -35,7 +35,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - fast-api-network
+      - sso-identity-network
 
   pgadmin:
     container_name: db-web
@@ -50,14 +50,14 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - fast-api-network
+      - sso-identity-network
 
 volumes:
   db_data:
   pgadmin_data:
 
 networks:
-  fast-api-network:
-    name: fast-api-network
-    external: true
+  sso-identity-network:
+    name: sso-identity-network
+    # external: true
     driver: bridge
