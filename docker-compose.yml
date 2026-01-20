@@ -19,6 +19,24 @@ services:
       start_period: 10s
     networks:
       - sso-identity-network
+  redis:
+    image: redis:7.2-alpine
+    container_name: sso-identity-redis
+    command:
+      [
+        "redis-server",
+        "--requirepass", "${REDIS_PASSWORD}",
+        "--appendonly", "yes"
+      ]
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    env_file:
+      - .env
+    networks:
+      - sso-identity-network
+    restart: unless-stopped
 
   # web:
   #   container_name: sso-identity-provider
@@ -55,6 +73,7 @@ services:
 volumes:
   db_data:
   pgadmin_data:
+  redis_data:
 
 networks:
   sso-identity-network:

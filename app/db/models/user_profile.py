@@ -15,4 +15,3 @@ class UserProfile(Base, TimestampMixin):
     avatar_url = Column(String, nullable=True)
 
     user = relationship("User", back_populates="profile")
-

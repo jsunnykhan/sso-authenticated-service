@@ -247,16 +247,22 @@
                 <form method="post" action="/oauth/login" onsubmit="showLoader()">
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="username" required>
+                        <input type="email" name="email" required>
                     </div>
 
                     <div class="form-group">
                         <label>Password</label>
                         <input type="password" name="password" required>
                     </div>
+                    <input type="hidden" name="scope" value="{{ scope }}">
+                    <input type="hidden" name="response_type" value="{{ response_type }}">
+                    <input type="hidden" name="client_id" value="{{ client_id }}">
+                    <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+                    <input type="hidden" name="code_challenge" value="{{ code_challenge }}">
+                    <input type="hidden" name="code_challenge_method" value="{{ code_challenge_method }}">
 
                     <div class="actions">
-                        <button type="button" class="btn btn-cancel" onclick="window.location.href='/'">
+                        <button type="button" class="btn btn-cancel" onclick="window.location.href='{{ redirect_uri }}'">
                             Cancel
                         </button>
                         <button type="submit" class="btn btn-submit">

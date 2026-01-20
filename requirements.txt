@@ -16,5 +16,7 @@ python-dotenv
 jinja2 
 python-multipart
 
+redis
+
 #for maintains db and migrate db
 alembic

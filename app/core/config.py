@@ -11,7 +11,11 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     IDP_ISSUER : str
-
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_DB: int
+    REDIS_PASSWORD: str
+    REDIS_CACHE_EXPIRE_SECONDS: int
     @property
     def DATABASE_URL(self) -> str:
         return (
