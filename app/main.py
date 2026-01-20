@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.v1.routes import auth
+from app.api.v1.routes import token
 
 app = FastAPI(
     title="SSO Identity Service",
@@ -8,4 +8,4 @@ app = FastAPI(
 )
 
 
-app.include_router(auth.app, prefix="/v1/oauth", tags=["oauth"])
+app.include_router(token.app, prefix="/v1/oauth", tags=["auth"])
