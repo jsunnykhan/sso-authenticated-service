@@ -1,6 +1,10 @@
 from urllib.parse import urlencode
 from app.services.redis import store_auth_code
-from app.services.user import create_new_user, get_user_by_email, get_user_username_and_password
+from app.services.user import (
+    create_new_user,
+    get_user_by_email,
+    get_user_username_and_password,
+)
 from app.utils.logger import logger
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -47,7 +51,8 @@ async def perform_login(
     code_challenge_method: str = Form(...),
     db=Depends(get_db),
 ):
-    params = AuthorizeParams(
+    params = AuthorizeUserParams(
+        id="",
         scope=scope,
         response_type=response_type,
         client_id=client_id,
@@ -74,6 +79,8 @@ async def perform_login(
         return RedirectResponse(
             url=f"{redirect_uri}?error=access_denied", status_code=302
         )
+
+    params.id = str(user.id)
     code = await store_auth_code(data=params)
     redirect_url = f"{redirect_uri}?code={code}"
     return RedirectResponse(url=redirect_url, status_code=302)

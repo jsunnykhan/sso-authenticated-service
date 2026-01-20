@@ -38,22 +38,22 @@ services:
       - sso-identity-network
     restart: unless-stopped
 
-  # web:
-  #   container_name: sso-identity-provider
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "4010:4010"
-  #   environment:
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   networks:
-  #     - sso-identity-network
+  web:
+    container_name: sso-identity-provider
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "4010:4010"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sso-identity-network
 
   pgadmin:
     container_name: db-web

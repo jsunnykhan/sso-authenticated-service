@@ -63,7 +63,8 @@ async def perform_consent(
             url=f"{redirect_uri}?error=consent_error", status_code=303
         )
 
-    params = AuthorizeParams(
+    params = AuthorizeUserParams(
+        id=user_id,
         scope=scope,
         response_type=response_type,
         client_id=client_id,
@@ -71,8 +72,8 @@ async def perform_consent(
         code_challenge=code_challenge,
         code_challenge_method=code_challenge_method,
     )
-    code = store_auth_code(params)
-    if not code:
+    code = await store_auth_code(params)
+    if code is None:
         return RedirectResponse(
             url=f"{redirect_uri}?error=server_error", status_code=303
         )
