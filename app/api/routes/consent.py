@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
-@app.get("/")
+@app.get("")
 async def consent(request: Request, params: AuthorizeUserParams = Depends()):
     return templates.TemplateResponse(
         "consent.html",

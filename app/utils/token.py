@@ -1,6 +1,6 @@
 import base64
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt
 from app.core.config import settings
 from app.schemas.jwt import JWTToken
@@ -23,19 +23,26 @@ class Token:
         self.KEYS_DIR.mkdir(parents=True, exist_ok=True)
 
     def get_access_token(self, token_data: JWTToken):
-        expire = datetime.utcnow() + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
+        now = datetime.now(timezone.utc)
+        expire = now + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
         payload = token_data.model_dump()
-        payload.update({"exp": int(expire.timestamp())})
+        payload.update({"exp": int(expire.timestamp()), "iat": int(now.timestamp())})
         return jwt.encode(payload, self.SECRET_KEY, algorithm=self.ALGORITHM)
 
     def get_refresh_token(self, token_data: JWTToken):
-        expire = datetime.utcnow() + timedelta(minutes=self.REFRESH_TOKEN_EXPIRE_DAYS)
-        payload = token_data.dict()
-        payload.update({"exp": int(expire.timestamp())})
+        now = datetime.now(timezone.utc)
+        expire = now + timedelta(minutes=self.REFRESH_TOKEN_EXPIRE_DAYS)
+        payload = token_data.model_dump()
+        payload.update({"exp": int(expire.timestamp()), "iat": int(now.timestamp())})
         return jwt.encode(payload, self.SECRET_KEY, algorithm=self.ALGORITHM)
 
     def decode_token(self, token: str):
-        return jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+        return jwt.decode(
+            token,
+            self.SECRET_KEY,
+            algorithms=[self.ALGORITHM],
+            options={"verify_aud": False},
+        )
 
     def get_client_id(self):
         return str(uuid.uuid4())

@@ -11,7 +11,7 @@ from app.core.radis import redis_client
 app = APIRouter()
 
 
-@app.get("/")
+@app.get("")
 async def authorize(params: AuthorizeParams = Depends(), db=Depends(get_db)):
     if not is_valid_client(params.client_id, db):
         raise HTTPException(

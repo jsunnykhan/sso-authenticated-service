@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("", response_class=HTMLResponse)
 async def login(request: Request, params: AuthorizeParams = Depends()):
     return templates.TemplateResponse(
         "login.html",
@@ -38,7 +38,7 @@ async def login(request: Request, params: AuthorizeParams = Depends()):
     )
 
 
-@app.post("/")
+@app.post("")
 async def perform_login(
     request: Request,
     email: str = Form(...),

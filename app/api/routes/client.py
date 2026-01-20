@@ -14,7 +14,7 @@ from app.utils.logger import logger
 app = APIRouter()
 
 
-@app.get("/", response_model=APIResponse[list[ClientBase]])
+@app.get("", response_model=APIResponse[list[ClientBase]])
 def get_client(db=Depends(get_db)):
 
     clients = get_clients(db)
@@ -26,7 +26,7 @@ def get_client(db=Depends(get_db)):
 
 
 @app.post(
-    "/",
+    "",
     response_model=APIResponse[ClientBase],
 )
 async def create_client(

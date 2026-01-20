@@ -35,7 +35,6 @@ async def exchange_token(
         return HTTPException(status_code=400, detail="Authorization code is required")
 
     redis_res = await consume_auth_code(code)
-    logger.info(f"Consumed auth code from redis: {redis_res}")
     if not redis_res:
         logger.error(f"Invalid or expired authorization code: {code}")
         return HTTPException(
