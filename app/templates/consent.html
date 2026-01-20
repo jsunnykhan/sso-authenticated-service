@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cotus | Authorization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg-dark: #0b0f14;
+            --card-dark: #111827;
+            --border-dark: #1f2937;
+            --primary: #3b82f6;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            padding: 24px;
+        }
+
+        .card {
+            background: var(--card-dark);
+            border-radius: 14px;
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 28px 32px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .intro {
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .permissions {
+            background: #020617;
+            border: 1px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .permission {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .permission:last-child {
+            margin-bottom: 0;
+        }
+
+        .permission svg {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            fill: var(--primary);
+        }
+
+        .permission-text {
+            font-size: 14px;
+        }
+
+        .permission-text span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 22px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-deny {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-dark);
+        }
+
+        .btn-deny:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-approve {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-approve:hover {
+            background: #2563eb;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 18px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-dark);
+        }
+
+        @media (max-width: 640px) {
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <!-- Header -->
+            <div class="header">
+                <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="64" height="64" rx="14" fill="#3B82F6" />
+                    <path d="M40 18C37.2 16.2 34.1 15.3 31 15.5
+                       C21.9 16 15 23.7 15.5 32.8
+                       C16 41.9 23.7 48.8 32.8 48.3
+                       C35.8 48.1 38.6 47 40.9 45.2" stroke="white" stroke-width="4" stroke-linecap="round" />
+                </svg>
+
+                <div class="title-group">
+                    <div class="title">Authorize Cotus</div>
+                    <div class="subtitle">Secure access request</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <div class="intro">
+                    <strong>Cotus</strong> is requesting permission to access your account.
+                    This allows the application to perform the following actions:
+                </div>
+
+                <div class="permissions">
+                    <div class="permission">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2a5 5 0 0 0-5 5v2H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5z" />
+                        </svg>
+                        <div class="permission-text">
+                            View your basic profile
+                            <span>Name, email address, and account status</span>
+                        </div>
+                    </div>
+
+                    <div class="permission">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 3h18v4H3zm0 6h18v12H3z" />
+                        </svg>
+                        <div class="permission-text">
+                            Access application data
+                            <span>Read and write data within Cotus services</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <form method="post" action="/consent/deny">
+                        <button class="btn btn-deny" type="submit">
+                            Deny
+                        </button>
+                    </form>
+
+                    <form method="post" action="/oauth/consent/approve">
+                        <button class="btn btn-approve" type="submit">
+                            Approve
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer">
+                © 2026 Cotus. Authorization required to continue.
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

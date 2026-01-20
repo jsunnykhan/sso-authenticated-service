@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cotus | Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg-dark: #0b0f14;
+            --card-dark: #111827;
+            --border-dark: #1f2937;
+            --primary: #3b82f6;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        /* Top Loader */
+        .top-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 6px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+            z-index: 9999;
+            transition: width 0.4s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 920px;
+            padding: 24px;
+        }
+
+        .card {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            background: var(--card-dark);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Left Section */
+        .card-left {
+            background: linear-gradient(160deg, #020617, #020617);
+            padding: 48px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--border-dark);
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        /* Right Section */
+        .card-right {
+            padding: 48px 42px;
+        }
+
+        .welcome {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #020617;
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .logo {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-dark);
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-submit:hover {
+            background: #2563eb;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                grid-template-columns: 1fr;
+            }
+
+            .card-left {
+                border-right: none;
+                border-bottom: 1px solid var(--border-dark);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-loader" id="topLoader"></div>
+
+    <div class="container">
+        <div class="card">
+            <!-- Left -->
+            <div class="card-left">
+                <div class="logo"><svg width="512" height="512" viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="autharaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#4F46E5" />
+                                <stop offset="100%" stop-color="#06B6D4" />
+                            </linearGradient>
+                        </defs>
+
+                        <rect width="512" height="512" rx="96" fill="#0F172A" />
+
+                        <path d="M256 96
+                                C170 96 128 154 128 224
+                                C128 294 184 336 256 336
+                                C312 336 352 304 352 256
+                                C352 224 330 208 304 208
+                                C272 208 256 230 256 256
+                                C256 278 270 288 288 288" 
+                            fill="none" stroke="url(#autharaGradient)" stroke-width="32" stroke-linecap="round"
+                            stroke-linejoin="round" />
+
+                        <circle cx="288" cy="288" r="18" fill="#06B6D4" />
+                    </svg>
+                </div>
+                <div class="company-name">COTUS</div>
+            </div>
+
+            <!-- Right -->
+            <div class="card-right">
+                <div class="welcome">Welcome to Cotus</div>
+                <div class="description">
+                    Sign in to access your dashboard and manage your organization securely.
+                </div>
+
+                <form method="post" action="/oauth/login" onsubmit="showLoader()">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn btn-cancel" onclick="window.location.href='/'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-submit">
+                            Submit
+                        </button>
+                    </div>
+                </form>
+
+                <div class="footer">
+                    © 2026 Cotus. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLoader() {
+            const loader = document.getElementById("topLoader");
+            loader.style.width = "100%";
+        }
+    </script>
+
+</body>
+
+</html>

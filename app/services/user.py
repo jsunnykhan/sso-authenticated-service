@@ -1,5 +1,4 @@
 from typing import cast
-from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db.models.password import Password
 from app.db.models.user import User

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timedelta
 from jose import jwt
 from app.core.config import settings
-from app.schemas.token import JWTToken
+from app.schemas.jwt import JWTToken
 
 from pathlib import Path
 import hashlib
