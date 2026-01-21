@@ -9,11 +9,15 @@ from app.utils.logger import logger
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 from app.db.session import get_db
 from pathlib import Path
+from app.utils.hash import get_password_hash
 
-from app.schemas.authorize import AuthorizeParams, AuthorizeUserParams
+from app.schemas.authorize import (
+    AuthorizeParams,
+    AuthorizeUserParams,
+    AuthorizeConsentParams,
+)
 
 app = APIRouter()
 
@@ -62,25 +66,23 @@ async def perform_login(
     )
     user = get_user_by_email(email, db)
 
-    if user is None or str(user.email) != email:
-        user = create_new_user(email, password, db)
-        if not user:
-            return RedirectResponse(
-                url=f"{redirect_uri}?error=invalid_request", status_code=302
-            )
-        else:
-            user_params = AuthorizeUserParams(**params.dict(), id=str(user.id))
-            return RedirectResponse(
-                url=f"/oauth/consent?{urlencode(user_params.dict(exclude_none=True))}",
-                status_code=303,
-            )
+    if user is None:
+        hash_pass = get_password_hash(password)
+        consent_params = AuthorizeConsentParams(
+            **params.model_dump(), email=email, hash=hash_pass
+        )
+        return RedirectResponse(
+            url=f"/oauth/consent?{urlencode(consent_params.model_dump())}",
+            status_code=303,
+        )
+
     is_valid_pass = get_user_username_and_password(email, password, db)
     if not is_valid_pass:
         return RedirectResponse(
             url=f"{redirect_uri}?error=access_denied", status_code=302
         )
 
-    params.id = str(user.id)
-    code = await store_auth_code(data=params)
+    user_params = params.model_copy(update={"id": str(user.id)})
+    code = await store_auth_code(data=user_params)
     redirect_url = f"{redirect_uri}?code={code}"
     return RedirectResponse(url=redirect_url, status_code=302)

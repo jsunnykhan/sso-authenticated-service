@@ -76,6 +76,7 @@ async def exchange_token(
         client_id=client_id,
         sub=str(user.email),
         aud=client.client_name,
+        iss=settings.IDP_ISSUER,
         exp=int((datetime.utcnow().timestamp()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 

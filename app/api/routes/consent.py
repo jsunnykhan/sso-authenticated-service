@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 
 from app.db.session import get_db
-from app.schemas.authorize import AuthorizeParams, AuthorizeUserParams
+from app.schemas.authorize import AuthorizeConsentParams , AuthorizeUserParams
 from app.services.client import get_oauth_client_by_id
 from app.services.consent import create_user_consent
 from app.services.redis import store_auth_code
-from app.services.user import get_user_by_id
+from app.services.user import create_new_user
 
 app = APIRouter()
 
@@ -19,7 +19,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
 @app.get("")
-async def consent(request: Request, params: AuthorizeUserParams = Depends()):
+async def consent(request: Request, params: AuthorizeConsentParams = Depends()):
     return templates.TemplateResponse(
         "consent.html",
         {
@@ -27,7 +27,8 @@ async def consent(request: Request, params: AuthorizeUserParams = Depends()):
             "scope": params.scope,
             "response_type": params.response_type,
             "client_id": params.client_id,
-            "user_id": params.id,
+            "email": params.email,
+            "hash" : params.hash,
             "redirect_uri": params.redirect_uri,
             "code_challenge": params.code_challenge,
             "code_challenge_method": params.code_challenge_method,
@@ -37,14 +38,15 @@ async def consent(request: Request, params: AuthorizeUserParams = Depends()):
 
 @app.post("/approve")
 async def perform_consent(
-    request: Request,
-    user_id: str = Form(...),
+    _: Request,
     scope: str = Form(...),
     response_type: str = Form(...),
     client_id: str = Form(...),
     redirect_uri: str = Form(...),
     code_challenge: str = Form(...),
     code_challenge_method: str = Form(...),
+    email :str = Form(...),
+    hash : str = Form(...),
     db=Depends(get_db),
 ):
     client = get_oauth_client_by_id(client_id, db)
@@ -52,11 +54,12 @@ async def perform_consent(
         return RedirectResponse(
             url=f"{redirect_uri}?error=invalid_client", status_code=303
         )
-    user = get_user_by_id(user_id, db)
+    user = create_new_user(email , hash , db)
     if not user:
         return RedirectResponse(
-            url=f"{redirect_uri}?error=invalid_user", status_code=303
+            url=f"{redirect_uri}?error=failed_to_register", status_code=303
         )
+    user_id = str(user.id)
     consent = create_user_consent(user_id, client_id, db)
     if not consent:
         return RedirectResponse(

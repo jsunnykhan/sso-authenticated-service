@@ -11,3 +11,7 @@ class AuthorizeParams(BaseModel):
     
 class AuthorizeUserParams(AuthorizeParams):
     id: Optional[str] = Field(None, description="User ID")
+    
+class AuthorizeConsentParams(AuthorizeParams) :
+    email : str
+    hash: str
