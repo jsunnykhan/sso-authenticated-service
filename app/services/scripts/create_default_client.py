@@ -1,11 +1,11 @@
 from fastapi import Depends
-from app.db.session import Session, get_db
+from app.db.session import Session, SessionLocal, get_db
 from app.services.client import create_oauth_client
 from app.utils.token import Token
 from app.db.models.oauth_client import OAuthClient
 
 
-def main(db: Session = Depends(get_db)):
+def main():
     default_client_name = "custos_default_client"
     default_redirect_uris = "https://custos.sunnykhan.pro/api/auth/callback/custos-sso"
     token_util = Token()
@@ -20,6 +20,8 @@ def main(db: Session = Depends(get_db)):
         client_id=client_id,
         client_secret=client_secret,
     )
+
+    db = SessionLocal()
 
     client = create_oauth_client(
         client=new_client,
