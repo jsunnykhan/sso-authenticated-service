@@ -30,6 +30,9 @@ def main():
 
     if client:
         print("Default client created successfully.")
+        print(f"client_id {client_id}")
+        print(f"client_secret {client_secret}")
+        print(f"redirect_uri {default_redirect_uris}")
     else:
         print("Default client already exists.")
 
