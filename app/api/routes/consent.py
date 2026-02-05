@@ -10,6 +10,7 @@ from app.services.client import get_oauth_client_by_id
 from app.services.consent import create_user_consent
 from app.services.redis import store_auth_code
 from app.services.user import create_new_user
+from app.utils.url import normalize_url
 
 app = APIRouter()
 
@@ -54,6 +55,19 @@ async def perform_consent(
         return RedirectResponse(
             url=f"{redirect_uri}?error=invalid_client", status_code=303
         )
+    
+    # Redirect URI Validation
+    input_redirect = normalize_url(redirect_uri)
+    stored_redirect = normalize_url(client.redirect_uris)
+    
+    if (
+        input_redirect.netloc != stored_redirect.netloc or 
+        input_redirect.path != stored_redirect.path
+    ):
+        return RedirectResponse(
+            url=f"{redirect_uri}?error=invalid_redirect_uri", status_code=303
+        )
+
     user = create_new_user(email , hash , db)
     if not user:
         return RedirectResponse(

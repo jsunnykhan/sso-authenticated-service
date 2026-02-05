@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -15,3 +16,8 @@ class ClientBase(BaseModel):
 class ClientCreate(BaseModel):
     redirect_uris: str
     client_name: str
+
+
+class ClientUpdate(BaseModel):
+    redirect_uris: Optional[str] = None
+    client_name: Optional[str] = None

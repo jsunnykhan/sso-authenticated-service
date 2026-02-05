@@ -33,3 +33,18 @@ async def consume_auth_code(code: str) -> Optional[AuthorizeUserParams]:
 
 async def delete_cache(key: str):
     await redis_client.delete(key)
+
+
+async def store_access_token(token: str, user_id: str, expire_seconds: int):
+    key = f"access_token:{token}"
+    await redis_client.setex(key, expire_seconds, user_id)
+
+
+async def revoke_access_token(token: str):
+    key = f"access_token:{token}"
+    await redis_client.delete(key)
+
+
+async def is_token_revoked(token: str) -> bool:
+    key = f"access_token:{token}"
+    return not await redis_client.exists(key)

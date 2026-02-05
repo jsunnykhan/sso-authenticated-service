@@ -1,0 +1,65 @@
+- write a sso identity provider follow google, twitter , github, linkedin, facebook how they do standardize SSO IDENTITY provider
+- it should support openid connect
+- it should support oauth 2.0
+- it should support saml 2.0
+- it should support oidc discovery
+- it should support jwks
+- it should support userinfo endpoint
+- it should support token endpoint
+- it should support authorization endpoint
+- it should support consent endpoint
+- it should support logout endpoint
+- it should support user profile endpoint
+- it should support change password endpoint
+- it should support forgot password endpoint
+- it should support reset password endpoint
+- it should support change email endpoint
+- it should support forgot email endpoint
+- it should support reset email endpoint
+- it should support change username endpoint
+- it should support forgot username endpoint
+- it should support reset username endpoint
+- it should support change profile endpoint
+- it should support forgot profile endpoint
+- it should support reset profile endpoint
+
+
+- it should support client management
+- a user can create multiple clients
+- it should support client creation
+- it should support client update
+- it should support client deletion
+- it should support client listing
+- it should support client details
+- it should support client secrets
+- it should support client redirect uris
+- it should support client scopes
+- it should support client grants
+- it should support client tokens
+- it should support client refresh tokens
+- it should support client access tokens
+- it should support client id tokens
+- it should support client userinfo endpoint
+- it should support client token endpoint
+- it should support client authorization endpoint
+- it should support client consent endpoint
+- it should support client logout endpoint
+- it should support client user profile endpoint
+- it should support client change password endpoint
+- it should support client forgot password endpoint
+- it should support client reset password endpoint
+- it should support client change email endpoint
+- it should support client forgot email endpoint
+- it should support client reset email endpoint
+- it should support client change username endpoint
+- it should support client forgot username endpoint
+- it should support client reset username endpoint
+- it should support client change profile endpoint
+- it should support client forgot profile endpoint
+- it should support client reset profile endpoint
+
+
+[optional if needed]
+- store access token in redis
+- when logout it will delete access token from redis
+- when access token is expired it will delete access token from redis

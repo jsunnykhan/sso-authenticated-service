@@ -19,16 +19,23 @@ async def openid_configuration(request: Request):
             "issuer": base_url,
             "authorization_endpoint": f"{base_url}/oauth/authorize",
             "token_endpoint": f"{base_url}/oauth/token",
-            "userinfo_endpoint": f"{base_url}/oauth/userinfo",
+            "userinfo_endpoint": f"{base_url}/oauth/user_info",
             "jwks_uri": f"{base_url}/.well-known/jwks.json",
-            "response_types_supported": ["code", "id_token", "token id_token"],
+            "logout_endpoint": f"{base_url}/oauth/logout",
+            "response_types_supported": ["code", "token", "id_token", "code token", "code id_token", "token id_token", "code token id_token"],
             "subject_types_supported": ["public"],
             "id_token_signing_alg_values_supported": ["RS256"],
-            "scopes_supported": ["openid", "profile", "email"],
+            "scopes_supported": ["openid", "profile", "email", "offline_access"],
             "token_endpoint_auth_methods_supported": [
                 "client_secret_basic",
                 "client_secret_post",
             ],
+            "grant_types_supported": ["authorization_code", "refresh_token", "client_credentials"],
+            "claims_supported": ["sub", "iss", "auth_time", "name", "given_name", "family_name", "nickname", "profile", "picture", "website", "email", "email_verified", "locale", "zoneinfo"],
+            "claims_parameter_supported": False,
+            "request_parameter_supported": True,
+            "request_uri_parameter_supported": True,
+            "require_request_uri_registration": False,
         }
     )
 

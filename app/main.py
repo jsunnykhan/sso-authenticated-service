@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import authorize, token, consent, login, client, user_profile ,well_known
+from app.api.routes import authorize, token, consent, login, client, user_profile, well_known, logout, user_mgmt
 
 app = FastAPI(
     title="SSO Identity Service",
@@ -16,4 +16,6 @@ app.include_router(token.app, prefix="/oauth/token", tags=["token"])
 app.include_router(user_profile.app, prefix="/oauth/user_info", tags=["profile"])
 
 app.include_router(login.app, prefix="/oauth/login", tags=["login"])
+app.include_router(logout.app, prefix="/oauth/logout", tags=["logout"])
+app.include_router(user_mgmt.app, prefix="/user", tags=["user"])
 app.include_router(consent.app, prefix="/oauth/consent", tags=["consent"])

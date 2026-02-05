@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-def normalize_url(url: str) :
-    url = url.replace("https://", "").replace("http://", "")
-    url.strip("/")
+def normalize_url(url: str):
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
     return urlparse(url)

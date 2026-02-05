@@ -7,9 +7,13 @@ app = APIRouter()
 
 
 @app.get("")
-async def user_profile(user=Depends(validate_jwt_token)):
-
+async def user_info(user=Depends(validate_jwt_token)):
+    """
+    OIDC UserInfo endpoint.
+    """
     return {
+        "sub": str(user.id),
         "email": user.email,
         "name": user.name,
+        "email_verified": True,
     }
