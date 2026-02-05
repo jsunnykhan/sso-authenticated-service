@@ -2,15 +2,14 @@ from typing import cast
 from sqlalchemy.orm import Session
 from app.db.models.password import Password
 from app.db.models.user import User
-from app.utils.hash import verify_password_hash
-
+from app.core.security import verify_password
 
 def get_user_username_and_password(email: str, password: str, db: Session):
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return None
 
-    if not verify_password_hash(password, user.password.password):
+    if not verify_password(password, user.password.password):
         return None
 
     return user

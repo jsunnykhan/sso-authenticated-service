@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+from app.core.security import get_idp_public_key
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+import base64
 
 app = APIRouter()
-
 
 # OpenID Connect Discovery
 @app.get("/openid-configuration")
@@ -29,28 +32,41 @@ async def openid_configuration(request: Request):
         }
     )
 
+def int_to_base64(value: int) -> str:
+    """Converts an integer to a base64url-encoded string."""
+    value_hex = hex(value)[2:]
+    if len(value_hex) % 2 == 1:
+        value_hex = '0' + value_hex
+    value_bytes = bytes.fromhex(value_hex)
+    return base64.urlsafe_b64encode(value_bytes).rstrip(b'=').decode('utf-8')
 
 # JWKS endpoint
 @app.get("/jwks.json")
 async def jwks():
     """
-    Return a dummy JWKS for testing (replace with your real keys)
+    Return the real JWKS for the IdP.
     """
-    # Example key, replace with your actual RSA public key in production
+    public_key_pem = get_idp_public_key()
+    public_key = serialization.load_pem_public_key(public_key_pem.encode())
+    
+    if not isinstance(public_key, rsa.RSAPublicKey):
+        return JSONResponse(status_code=500, content={"error": "Invalid public key type"})
+
+    numbers = public_key.public_numbers()
+    
     jwk = {
         "keys": [
             {
                 "kty": "RSA",
-                "kid": "1",
                 "use": "sig",
+                "kid": "main-idp-key",
                 "alg": "RS256",
-                "n": "replace_with_your_modulus",
-                "e": "AQAB",
+                "n": int_to_base64(numbers.n),
+                "e": int_to_base64(numbers.e),
             }
         ]
     }
     return JSONResponse(content=jwk)
-
 
 @app.get("/{path:path}")
 async def catchall_well_known(path: str):

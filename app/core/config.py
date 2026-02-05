@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     REDIS_DB: int
     REDIS_PASSWORD: str
     REDIS_CACHE_EXPIRE_SECONDS: int
+    IDP_PRIVATE_KEY_PATH: str = "./keys/idp_private.pem"
+    IDP_PUBLIC_KEY_PATH: str = "./keys/idp_public.pem"
+
     @property
     def DATABASE_URL(self) -> str:
         return (
@@ -25,5 +28,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings() # type: ignore

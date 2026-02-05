@@ -1,6 +1,5 @@
-import code
-from datetime import datetime
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 
 from app.db.session import get_db
 from app.schemas.jwt import JWTToken
@@ -22,62 +21,75 @@ async def exchange_token(
     grant_type: str = Form(...),
     code: str = Form(...),
     redirect_uri: str = Form(...),
-    code_verifier: str = Form(...),
+    client_id: str = Form(...),
+    client_secret: str = Form(None),
+    code_verifier: str = Form(None),
     db=Depends(get_db),
 ):
     token = Token()
 
     if grant_type != "authorization_code":
-        return HTTPException(status_code=400, detail="Invalid grant type")
+        raise HTTPException(status_code=400, detail="Invalid grant type")
 
     if not code:
         logger.error("Authorization code is missing")
-        return HTTPException(status_code=400, detail="Authorization code is required")
+        raise HTTPException(status_code=400, detail="Authorization code is required")
 
     redis_res = await consume_auth_code(code)
     if not redis_res:
         logger.error(f"Invalid or expired authorization code: {code}")
-        return HTTPException(
+        raise HTTPException(
             status_code=400, detail="Invalid or expired authorization code"
         )
 
-    is_valid_pkce = token.verify_pkce(code_verifier, redis_res.code_challenge)
-
-    if not is_valid_pkce:
-        logger.error("Invalid PKCE code verifier")
-        return HTTPException(status_code=400, detail="Invalid PKCE code verifier")
-
-    client_id = redis_res.client_id
-
+    # Verify Client
     client = get_oauth_client_by_id(client_id, db)
-
     if not client:
         logger.error(f"Client not found: {client_id}")
-        return HTTPException(status_code=400, detail="Invalid client")
+        raise HTTPException(status_code=400, detail="Invalid client")
 
-    redirect_url = normalize_url(redirect_uri)
-    redirect_uri_client = normalize_url(client.redirect_uris)
+    # Client Secret Verification (Mandatory if secret is set in DB)
+    if client.client_secret:
+        if not client_secret or client_secret != client.client_secret:
+            logger.error(f"Client secret mismatch for client: {client_id}")
+            raise HTTPException(status_code=401, detail="Invalid client secret")
+
+    # PKCE Verification
+    if code_verifier:
+        is_valid_pkce = token.verify_pkce(code_verifier, redis_res.code_challenge)
+        if not is_valid_pkce:
+            logger.error("Invalid PKCE code verifier")
+            raise HTTPException(status_code=400, detail="Invalid PKCE code verifier")
+    elif redis_res.code_challenge:
+        logger.error("PKCE code verifier missing but challenge was provided")
+        raise HTTPException(status_code=400, detail="PKCE code verifier is required")
+
+    # Redirect URI Validation
+    # In production, this should be an exact match or strictly validated
+    input_redirect = normalize_url(redirect_uri)
+    stored_redirect = normalize_url(client.redirect_uris)
+    
     if (
-        redirect_uri_client.netloc != redirect_url.netloc
-        and redirect_uri_client.path != redirect_url.path
+        input_redirect.netloc != stored_redirect.netloc or 
+        input_redirect.path != stored_redirect.path
     ):
         logger.error(
-            f"Redirect URI mismatch: expected {client.redirect_uris}, got {redirect_uri} {client.redirect_uris} {redirect_url}"
+            f"Redirect URI mismatch: expected {client.redirect_uris}, got {redirect_uri}"
         )
-        return HTTPException(status_code=400, detail="Invalid redirect URI")
+        raise HTTPException(status_code=400, detail="Invalid redirect URI")
 
     user = get_user_by_id(str(redis_res.id), db)
     if not user:
         logger.error(f"User not found: {redis_res.id}")
-        return HTTPException(status_code=400, detail="Invalid user")
+        raise HTTPException(status_code=400, detail="Invalid user")
 
     jwt_token = JWTToken(
         email=str(user.email),
         client_id=client_id,
         sub=str(user.email),
-        aud=client.client_name,
+        aud=client.client_name or client_id,
         iss=settings.IDP_ISSUER,
-        exp=int((datetime.utcnow().timestamp()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        exp=int((datetime.now(timezone.utc).timestamp()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60),
     )
 
     access_token = token.get_access_token(jwt_token)

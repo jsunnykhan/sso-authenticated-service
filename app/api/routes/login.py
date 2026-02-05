@@ -11,7 +11,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.db.session import get_db
 from pathlib import Path
-from app.utils.hash import get_password_hash
+from app.core.security import hash_password as get_password_hash
 
 from app.schemas.authorize import (
     AuthorizeParams,

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from app.api.routes.depenency_jwt import validate_jwt_token
+from app.api.routes.dependency_jwt import validate_jwt_token
 from app.db.session import get_db
 from app.utils.logger import logger
 

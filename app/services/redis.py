@@ -1,4 +1,4 @@
-from app.core.radis import redis_client
+from app.core.redis import redis_client
 from app.core.config import settings
 from app.schemas.authorize import AuthorizeUserParams
 import uuid

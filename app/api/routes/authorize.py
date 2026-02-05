@@ -5,8 +5,6 @@ from app.schemas.authorize import AuthorizeParams
 from urllib.parse import urlencode
 
 from app.services.client import is_valid_client
-from app.utils.logger import logger
-from app.core.radis import redis_client
 
 app = APIRouter()
 
