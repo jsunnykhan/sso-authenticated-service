@@ -8,6 +8,7 @@ class AuthorizeParams(BaseModel):
     redirect_uri : str
     code_challenge : str
     code_challenge_method : str
+    state: str
     
 class AuthorizeUserParams(AuthorizeParams):
     id: Optional[str] = Field(None, description="User ID")

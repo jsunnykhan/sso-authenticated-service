@@ -38,6 +38,7 @@ async def login(request: Request, params: AuthorizeParams = Depends()):
             "redirect_uri": params.redirect_uri,
             "code_challenge": params.code_challenge,
             "code_challenge_method": params.code_challenge_method,
+            "state": params.state,
         },
     )
 
@@ -53,6 +54,7 @@ async def perform_login(
     redirect_uri: str = Form(...),
     code_challenge: str = Form(...),
     code_challenge_method: str = Form(...),
+    state: str = Form(...),
     db=Depends(get_db),
 ):
     params = AuthorizeUserParams(
@@ -63,6 +65,7 @@ async def perform_login(
         redirect_uri=redirect_uri,
         code_challenge=code_challenge,
         code_challenge_method=code_challenge_method,
+        state=state,
     )
     user = get_user_by_email(email, db)
 
@@ -84,5 +87,5 @@ async def perform_login(
 
     user_params = params.model_copy(update={"id": str(user.id)})
     code = await store_auth_code(data=user_params)
-    redirect_url = f"{redirect_uri}?code={code}"
+    redirect_url = f"{redirect_uri}?code={code}&state={state}"
     return RedirectResponse(url=redirect_url, status_code=302)
